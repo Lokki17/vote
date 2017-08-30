@@ -2,10 +2,13 @@ package com.test.vote.repository.entity;
 
 import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Lokki17
@@ -18,7 +21,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements UserDetails {
 
     @NotEmpty
     private String name;
@@ -29,4 +32,37 @@ public class User extends AbstractEntity {
     @NotEmpty
     @Column(unique = true)
     private String email;
+
+    @Enumerated(value = EnumType.STRING)
+    private Authority authority;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(authority);
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

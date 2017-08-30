@@ -2,22 +2,24 @@ package com.test.vote.api.controllers;
 
 import com.test.vote.api.mappers.VoteCandidateMapper;
 import com.test.vote.api.mappers.VoteMapper;
-import com.test.vote.api.mappers.VoteThemeMapper;
 import com.test.vote.api.resources.VoteCandidateResource;
 import com.test.vote.api.resources.VoteResource;
+import com.test.vote.api.useragent.UserAgent;
 import com.test.vote.repository.entity.Vote;
 import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
+import com.test.vote.services.UserService;
 import com.test.vote.services.VoteCandidateService;
 import com.test.vote.services.VoteService;
-import com.test.vote.services.VoteThemeService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -26,8 +28,7 @@ import java.util.List;
  * @since 29.08.2017
  */
 @RestController
-@RequestMapping("/")
-//@RequestMapping("/candidates")
+@RequestMapping("/candidates")
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class VoteCandidateController {
 
@@ -44,12 +45,10 @@ public class VoteCandidateController {
     private final VoteMapper voteMapper;
 
     @NonNull
-    private final VoteThemeService voteThemeService;
-
-    @NonNull
-    private final VoteThemeMapper voteThemeMapper;
+    private final UserAgent userAgent;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public VoteCandidateResource getById(@PathVariable("id") VoteCandidate entity) {
         return mapper.toResource(entity);
     }
@@ -87,13 +86,12 @@ public class VoteCandidateController {
     }
 
     @PostMapping("/{id}/votes")
-    public ResponseEntity<VoteResource> create(@PathVariable("id") VoteCandidate entity) {
-        Vote vote = new Vote(null, entity);
-
-        return new ResponseEntity<>(
-                voteMapper.toResource(voteService.create(vote)),
-                HttpStatus.CREATED
-        );
+//    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    public ResponseEntity<VoteResource> create(@PathVariable("id") VoteCandidate entity, HttpServletRequest request) {
+        return userAgent.currentUser()
+                .map(user -> voteService.create(new Vote(user, entity)))
+                .map(vote -> new ResponseEntity<>(voteMapper.toResource(vote), HttpStatus.CREATED))
+                .getOrElse(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/{id}/votes")

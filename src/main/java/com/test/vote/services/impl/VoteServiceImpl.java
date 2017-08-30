@@ -6,6 +6,7 @@ import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteService;
 import com.test.vote.services.exception.EntityExistsException;
+import com.test.vote.services.exception.IllegalTimeException;
 import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,8 @@ public class VoteServiceImpl implements VoteService {
     private void checkTime(Vote entry) {
         LocalDateTime now = LocalDateTime.now();
         VoteTheme voteTheme = entry.getCandidate().getTheme();
-//        if (now.isBefore(voteTheme.getStartVote()) || now.isAfter(voteTheme.getFinishVote())) {
-//            throw new IllegalTimeException("Vote time is ended or not started yet");
-//        }
+        if (now.isBefore(voteTheme.getStartVote()) || now.isAfter(voteTheme.getFinishVote())) {
+            throw new IllegalTimeException("Vote time is ended or not started yet");
+        }
     }
 }

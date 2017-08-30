@@ -1,7 +1,7 @@
 package com.test.vote.api.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import com.test.vote.TestDataInitializer;
+import org.springframework.context.annotation.*;
 
 /**
  * @author Lokki17
@@ -12,5 +12,12 @@ import org.springframework.context.annotation.Configuration;
         "com.test.vote"
 })
 public class Config {
+
+    @Profile("initdb")
+    @Bean
+    @Lazy(false)
+    TestDataInitializer testDataInitializer() {
+        return new TestDataInitializer();
+    }
 
 }

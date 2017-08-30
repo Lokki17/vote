@@ -8,6 +8,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.test.vote.VoteApplication;
 import com.test.vote.api.config.Config;
+import com.test.vote.repository.UserRepository;
+import com.test.vote.repository.VoteCandidateRepository;
+import com.test.vote.repository.VoteRepository;
+import com.test.vote.repository.VoteThemeRepository;
 import javaslang.control.Try;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +38,18 @@ public abstract class BaseControllerIntegrationTest {
 
     public static final MediaType APP_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+
+    @Autowired
+    private VoteRepository voteRepository;
+
+    @Autowired
+    private VoteCandidateRepository voteCandidateRepository;
+
+    @Autowired
+    private VoteThemeRepository voteThemeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     protected MockMvc mvc;
 
@@ -81,6 +97,9 @@ public abstract class BaseControllerIntegrationTest {
 
     @After
     public void tearDown() {
-
+        voteRepository.deleteAll();
+        voteCandidateRepository.deleteAll();
+        userRepository.deleteAll();
+        voteThemeRepository.deleteAll();
     }
 }

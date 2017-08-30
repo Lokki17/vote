@@ -23,6 +23,7 @@ public class VoteThemeMapper {
     private final VoteCandidateMapper mapper;
 
     public VoteTheme fromResource(VoteThemeResource source, VoteTheme destination) {
+        destination.setId(source.getId());
         destination.setName(source.getName());
         destination.setFinishVote(source.getFinishVote());
         destination.setStartVote(source.getStartVote());

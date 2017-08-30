@@ -4,12 +4,14 @@ import com.test.vote.repository.VoteCandidateRepository;
 import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteCandidateService;
+import com.test.vote.services.exception.IllegalTimeException;
 import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -40,9 +42,9 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
 
     @Override
     public VoteCandidate update(VoteCandidate entity) {
-//        if (LocalDateTime.now().isAfter(entity.getTheme().getStartVote())) {
-//            throw new IllegalTimeException("Voting is begun");
-//        }
+        if (LocalDateTime.now().isAfter(entity.getTheme().getStartVote())) {
+            throw new IllegalTimeException("Voting is begun");
+        }
 
         return repository.save(entity);
     }

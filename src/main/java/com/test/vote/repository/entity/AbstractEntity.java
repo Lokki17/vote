@@ -1,5 +1,6 @@
 package com.test.vote.repository.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,6 +12,7 @@ import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 @MappedSuperclass
+@EqualsAndHashCode(of = "id")
 public abstract class AbstractEntity implements Serializable {
 
     @Id

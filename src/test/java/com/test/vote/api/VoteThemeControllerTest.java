@@ -8,9 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.test.vote.TestData.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,6 +76,8 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
                 .theme(THEME)
                 .get();
 
+        tmp.setId(theme.getId());
+
         mvc.perform(put(URL_ITEM, theme.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(json(tmp)))
@@ -90,12 +90,12 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
     }
 
     @Test
-    public void delete() throws Exception {
+    public void deleteEntity() throws Exception {
         VoteTheme theme = testContext
                 .theme(THEME)
                 .get();
 
-        mvc.perform(MockMvcRequestBuilders.delete(URL_ITEM, theme.getId()))
+        mvc.perform(delete(URL_ITEM, theme.getId()))
                 .andExpect(status().isNoContent());
     }
 

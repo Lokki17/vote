@@ -7,8 +7,14 @@ import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,5 +57,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User entity) {
         repository.delete(entity);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return getByEmail(username)
+                .getOrElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

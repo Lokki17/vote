@@ -24,9 +24,13 @@ public class VoteCandidateMapper {
     private final VoteThemeService voteThemeService;
 
     public VoteCandidate fromResource(VoteCandidateResource source, VoteCandidate destination) {
+        destination.setId(source.getId());
         destination.setName(source.getName());
-        voteThemeService.get(source.getId())
-                .peek(destination::setTheme);
+
+        if (source.getTheme() != null) {
+            voteThemeService.get(source.getTheme())
+                    .peek(destination::setTheme);
+        }
 
         return destination;
     }
