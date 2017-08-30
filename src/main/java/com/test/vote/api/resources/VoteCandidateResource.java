@@ -5,6 +5,7 @@ import com.test.vote.api.resources.validation.VoteThemeExists;
 import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.io.Serializable;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -19,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @JsonInclude(value = NON_NULL)
-public class VoteCandidateResource {
+public class VoteCandidateResource implements Serializable {
 
     private Long id;
 

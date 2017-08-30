@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
  * @since 29.08.2017
  */
 @Configuration
-@ComponentScan("com.test.vote")
+@ComponentScan({
+        "com.test.vote"
+})
 public class Config {
+
 }

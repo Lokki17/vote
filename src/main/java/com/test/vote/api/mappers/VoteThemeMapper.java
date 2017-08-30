@@ -1,20 +1,15 @@
 package com.test.vote.api.mappers;
 
 import com.test.vote.api.resources.VoteThemeResource;
-import com.test.vote.repository.entity.Vote;
-import com.test.vote.repository.entity.VoteCandidate;
+import com.test.vote.repository.entity.AbstractEntity;
 import com.test.vote.repository.entity.VoteTheme;
-import com.test.vote.services.VoteCandidateService;
-import com.test.vote.services.VoteThemeService;
-import javaslang.control.Option;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author Lokki17
@@ -25,10 +20,10 @@ import java.util.stream.Collectors;
 public class VoteThemeMapper {
 
     @NotNull
-    private final VoteCandidateService voteCandidateService;
+    private final VoteCandidateMapper mapper;
 
     public VoteTheme fromResource(VoteThemeResource source, VoteTheme destination) {
-        destination.setTheme(source.getTheme());
+        destination.setName(source.getName());
         destination.setFinishVote(source.getFinishVote());
         destination.setStartVote(source.getStartVote());
 
@@ -36,11 +31,20 @@ public class VoteThemeMapper {
     }
 
     public VoteThemeResource toResource(VoteTheme source) {
-        Map<VoteCandidate, Integer> map = source.getVoteCandidates().stream()
-                .collect(Collectors.groupingBy(Vote::getCandidate))
+        Map<Long, Integer> map = new HashMap<>();
+
+        source.getVoteCandidates()
+                .forEach(candidate -> map.put(candidate.getId(), candidate.getVotes().size()));
 
         return VoteThemeResource.builder()
                 .id(source.getId())
+                .name(source.getName())
+                .startVote(source.getStartVote())
+                .finishVote(source.getFinishVote())
+                .voteCandidates(source.getVoteCandidates().stream()
+                        .map(AbstractEntity::getId)
+                        .toArray(Long[]::new))
+                .result(map)
                 .build();
     }
 }

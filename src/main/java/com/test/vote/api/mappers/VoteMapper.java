@@ -1,7 +1,6 @@
 package com.test.vote.api.mappers;
 
 import com.test.vote.api.resources.VoteResource;
-import com.test.vote.repository.entity.User;
 import com.test.vote.repository.entity.Vote;
 import com.test.vote.services.VoteCandidateService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Lokki17
@@ -21,8 +22,7 @@ public class VoteMapper {
     @NotNull
     private final VoteCandidateService voteCandidateService;
 
-    public Vote fromResource(VoteResource source, Vote destination, User user) {
-        destination.setUser(user);
+    public Vote fromResource(VoteResource source, Vote destination) {
         voteCandidateService.get(source.getId())
                 .peek(destination::setCandidate);
 
@@ -33,7 +33,12 @@ public class VoteMapper {
         return VoteResource.builder()
                 .id(source.getId())
                 .candidate(source.getCandidate().getId())
-                .user(source.getUser().getId())
                 .build();
+    }
+
+    public List<VoteResource> toResource(List<Vote> votes) {
+        return votes.stream()
+                .map(this::toResource)
+                .collect(Collectors.toList());
     }
 }

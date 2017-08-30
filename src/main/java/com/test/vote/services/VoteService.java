@@ -1,6 +1,7 @@
 package com.test.vote.services;
 
 import com.test.vote.repository.entity.Vote;
+import com.test.vote.repository.entity.VoteCandidate;
 import javaslang.control.Option;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface VoteService {
 
     Option<Vote> get(Long id);
 
-    List<Vote> findAll();
+    List<Vote> findAll(VoteCandidate candidate);
 
     Vote create(Vote entity);
 

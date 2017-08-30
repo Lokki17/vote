@@ -1,8 +1,8 @@
 package com.test.vote.services.impl;
 
 import com.test.vote.repository.VoteCandidateRepository;
-import com.test.vote.repository.VoteRepository;
 import com.test.vote.repository.entity.VoteCandidate;
+import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteCandidateService;
 import javaslang.control.Option;
 import lombok.NonNull;
@@ -34,7 +34,16 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
     }
 
     @Override
+    public List<VoteCandidate> findAll(VoteTheme theme) {
+        return repository.findByTheme(theme);
+    }
+
+    @Override
     public VoteCandidate update(VoteCandidate entity) {
+//        if (LocalDateTime.now().isAfter(entity.getTheme().getStartVote())) {
+//            throw new IllegalTimeException("Voting is begun");
+//        }
+
         return repository.save(entity);
     }
 

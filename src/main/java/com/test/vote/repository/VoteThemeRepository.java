@@ -1,6 +1,5 @@
 package com.test.vote.repository;
 
-import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface VoteThemeRepository extends JpaRepository<VoteTheme, Long> {
 
-    VoteTheme findByVoteCandidates(VoteCandidate candidate);
+//    VoteTheme findByVoteCandidates(VoteCandidate candidate);
 }

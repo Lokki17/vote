@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -39,5 +40,11 @@ public class VoteCandidateMapper {
                         .map(AbstractEntity::getId)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public List<VoteCandidateResource> toResource(List<VoteCandidate> candidates) {
+        return candidates.stream()
+                .map(this::toResource)
+                .collect(Collectors.toList());
     }
 }

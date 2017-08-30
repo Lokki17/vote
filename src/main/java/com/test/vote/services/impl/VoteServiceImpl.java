@@ -2,10 +2,10 @@ package com.test.vote.services.impl;
 
 import com.test.vote.repository.VoteRepository;
 import com.test.vote.repository.entity.Vote;
+import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteService;
 import com.test.vote.services.exception.EntityExistsException;
-import com.test.vote.services.exception.IllegalTimeException;
 import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
-public class VoteServiceImpl implements VoteService{
+public class VoteServiceImpl implements VoteService {
 
     @NonNull
     private VoteRepository repository;
@@ -32,7 +32,7 @@ public class VoteServiceImpl implements VoteService{
     }
 
     @Override
-    public List<Vote> findAll() {
+    public List<Vote> findAll(VoteCandidate candidate) {
         return repository.findAll();
     }
 
@@ -40,7 +40,7 @@ public class VoteServiceImpl implements VoteService{
     public Vote create(Vote entity) {
         if (repository.existsByUserAndCandidate_Theme(entity.getUser(), entity.getCandidate().getTheme())) {
             throw new EntityExistsException("User with email " + entity.getUser().getEmail() +
-            " already voted");
+                    " already voted");
         }
         checkTime(entity);
 
@@ -50,8 +50,8 @@ public class VoteServiceImpl implements VoteService{
     private void checkTime(Vote entry) {
         LocalDateTime now = LocalDateTime.now();
         VoteTheme voteTheme = entry.getCandidate().getTheme();
-        if (now.isBefore(voteTheme.getStartVote()) || now.isAfter(voteTheme.getFinishVote())) {
-            throw new IllegalTimeException("Vote time is ended or not started yet");
-        }
+//        if (now.isBefore(voteTheme.getStartVote()) || now.isAfter(voteTheme.getFinishVote())) {
+//            throw new IllegalTimeException("Vote time is ended or not started yet");
+//        }
     }
 }
