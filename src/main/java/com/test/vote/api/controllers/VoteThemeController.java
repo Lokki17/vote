@@ -49,8 +49,7 @@ public class VoteThemeController {
     public ResponseEntity<VoteThemeResource> create(@Valid @RequestBody VoteThemeResource resource) {
         VoteTheme entity = mapper.fromResource(resource, new VoteTheme());
         VoteThemeResource created = mapper.toResource(service.create(entity));
-        Link selfLink = linkTo(VoteThemeController.class).slash(created.getThemeId()).withSelfRel();
-        created.add(selfLink);
+        created.add(linkTo(VoteThemeController.class).slash(created.getThemeId()).withSelfRel());
 
         return new ResponseEntity<>(
                 created,
