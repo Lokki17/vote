@@ -70,7 +70,6 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
     public void delete(VoteCandidate entity) {
         if (!voteRepository.existsByCandidate(entity)) {
 

@@ -8,20 +8,20 @@ import com.test.vote.api.useragent.UserAgent;
 import com.test.vote.repository.entity.Vote;
 import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
-import com.test.vote.services.UserService;
 import com.test.vote.services.VoteCandidateService;
 import com.test.vote.services.VoteService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * @author Lokki17
@@ -63,9 +63,12 @@ public class VoteCandidateController {
     @PostMapping
     public ResponseEntity<VoteCandidateResource> create(@RequestBody VoteCandidateResource resource) {
         VoteCandidate entity = mapper.fromResource(resource, new VoteCandidate());
+        VoteCandidateResource created = mapper.toResource(service.create(entity));
+        Link selfLink = linkTo(VoteThemeController.class).slash(created.getCandidateId()).withSelfRel();
+        created.add(selfLink);
 
         return new ResponseEntity<>(
-                mapper.toResource(service.create(entity)),
+                created,
                 HttpStatus.CREATED
         );
     }

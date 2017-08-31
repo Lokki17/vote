@@ -31,7 +31,7 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
                 .get();
 
         mvc.perform(get(URL_ITEM, theme.getId()))
-                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.themeId").isNotEmpty())
                 .andExpect(jsonPath("$.name").isNotEmpty())
                 .andExpect(jsonPath("$.startVote").isNotEmpty())
                 .andExpect(jsonPath("$.finishVote").isNotEmpty())
@@ -46,7 +46,7 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
 
         mvc.perform(get(URL))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].id").isNotEmpty())
+                .andExpect(jsonPath("$[0].themeId").isNotEmpty())
                 .andExpect(jsonPath("$[0].name").isNotEmpty())
                 .andExpect(jsonPath("$[0].startVote").isNotEmpty())
                 .andExpect(jsonPath("$[0].finishVote").isNotEmpty())
@@ -59,7 +59,7 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
         mvc.perform(post(URL)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(json(THEME_RESOURCE)))
-                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.themeId").isNotEmpty())
                 .andExpect(jsonPath("$.name").isNotEmpty())
                 .andExpect(jsonPath("$.startVote").isNotEmpty())
                 .andExpect(jsonPath("$.finishVote").isNotEmpty())
@@ -76,12 +76,12 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
                 .theme(THEME)
                 .get();
 
-        tmp.setId(theme.getId());
+        tmp.setThemeId(theme.getId());
 
         mvc.perform(put(URL_ITEM, theme.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(json(tmp)))
-                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.themeId").isNotEmpty())
                 .andExpect(jsonPath("$.name").isNotEmpty())
                 .andExpect(jsonPath("$.startVote").isNotEmpty())
                 .andExpect(jsonPath("$.finishVote").isNotEmpty())

@@ -9,5 +9,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface VoteThemeRepository extends JpaRepository<VoteTheme, Long> {
 
-//    VoteTheme findByVoteCandidates(VoteCandidate candidate);
 }

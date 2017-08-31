@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.test.vote.api.resources.validation.IsStartBeforeFinish;
 import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -24,9 +26,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Builder
 @JsonInclude(value = NON_NULL)
 @IsStartBeforeFinish
-public class VoteThemeResource implements Serializable {
+public class VoteThemeResource extends ResourceSupport implements Serializable {
 
-    private Long id;
+    private Long themeId;
 
     @NotEmpty
     private String name;

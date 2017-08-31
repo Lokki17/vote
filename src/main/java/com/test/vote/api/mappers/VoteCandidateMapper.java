@@ -24,7 +24,7 @@ public class VoteCandidateMapper {
     private final VoteThemeService voteThemeService;
 
     public VoteCandidate fromResource(VoteCandidateResource source, VoteCandidate destination) {
-        destination.setId(source.getId());
+        destination.setId(source.getCandidateId());
         destination.setName(source.getName());
 
         if (source.getTheme() != null) {
@@ -37,7 +37,7 @@ public class VoteCandidateMapper {
 
     public VoteCandidateResource toResource(VoteCandidate source) {
         return VoteCandidateResource.builder()
-                .id(source.getId())
+                .candidateId(source.getId())
                 .name(source.getName())
                 .theme(source.getTheme().getId())
                 .votes(source.getVotes().stream()

@@ -1,5 +1,6 @@
 package com.test.vote.repository.entity;
 
+import com.google.common.collect.ImmutableList;
 import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,7 +39,7 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(authority);
+        return ImmutableList.of(authority);
     }
 
     @Override

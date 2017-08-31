@@ -7,6 +7,7 @@ import com.test.vote.services.VoteThemeService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * @author Lokki17
@@ -45,9 +48,12 @@ public class VoteThemeController {
     @PostMapping
     public ResponseEntity<VoteThemeResource> create(@Valid @RequestBody VoteThemeResource resource) {
         VoteTheme entity = mapper.fromResource(resource, new VoteTheme());
+        VoteThemeResource created = mapper.toResource(service.create(entity));
+        Link selfLink = linkTo(VoteThemeController.class).slash(created.getThemeId()).withSelfRel();
+        created.add(selfLink);
 
         return new ResponseEntity<>(
-                mapper.toResource(service.create(entity)),
+                created,
                 HttpStatus.CREATED
         );
     }

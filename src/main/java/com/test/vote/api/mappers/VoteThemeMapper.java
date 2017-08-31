@@ -23,7 +23,7 @@ public class VoteThemeMapper {
     private final VoteCandidateMapper mapper;
 
     public VoteTheme fromResource(VoteThemeResource source, VoteTheme destination) {
-        destination.setId(source.getId());
+        destination.setId(source.getThemeId());
         destination.setName(source.getName());
         destination.setFinishVote(source.getFinishVote());
         destination.setStartVote(source.getStartVote());
@@ -38,7 +38,7 @@ public class VoteThemeMapper {
                 .forEach(candidate -> map.put(candidate.getId(), candidate.getVotes().size()));
 
         return VoteThemeResource.builder()
-                .id(source.getId())
+                .themeId(source.getId())
                 .name(source.getName())
                 .startVote(source.getStartVote())
                 .finishVote(source.getFinishVote())
