@@ -58,6 +58,21 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void getAllCandidatesByTheme() throws Exception {
+        VoteCandidate candidate = testContext
+                .candidate(VOTE_CANDIDATE, THEME)
+                .get();
+
+        mvc.perform(get(URL)
+        .param("theme", candidate.getTheme().getId().toString()))
+                .andExpect(jsonPath("$[0].candidateId").isNotEmpty())
+                .andExpect(jsonPath("$[0].name").isNotEmpty())
+                .andExpect(jsonPath("$[0].votes").isArray())
+                .andExpect(jsonPath("$[0].theme").isNotEmpty())
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void createCandidate() throws Exception {
         VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
 
