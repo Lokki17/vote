@@ -28,8 +28,8 @@ public class TestData {
 
     public static VoteTheme THEME = VoteTheme.builder()
             .name("Theme 1")
-            .startVote(LocalDateTime.now())
-            .finishVote(LocalDateTime.now().plusDays(1))
+            .startVote(LocalDateTime.now().plusDays(1))
+            .finishVote(LocalDateTime.now().plusDays(2))
             .build();
 
     public static VoteCandidate VOTE_CANDIDATE = VoteCandidate.builder()
@@ -45,8 +45,8 @@ public class TestData {
 
     public static VoteThemeResource THEME_RESOURCE = VoteThemeResource.builder()
             .name("Theme 1")
-            .startVote(LocalDateTime.now())
-            .finishVote(LocalDateTime.now().plusDays(1))
+            .startVote(THEME.getStartVote())
+            .finishVote(THEME.getFinishVote())
             .build();
 
     public static UserResource USER_RESOURCE = UserResource.builder()

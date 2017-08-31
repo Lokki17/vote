@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 import static com.test.vote.TestData.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -73,7 +74,42 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
                 .andExpect(jsonPath("$.name").isNotEmpty())
                 .andExpect(jsonPath("$.votes").isArray())
                 .andExpect(jsonPath("$.theme").isNotEmpty())
+                .andExpect(jsonPath("$._links").isNotEmpty())
                 .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    public void createWithWrongCandidate() throws Exception {
+        VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
+
+        testContext
+                .theme(THEME)
+                .get();
+
+        tmp.setTheme(new Random().nextLong());
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void createWithCandidateIsNull() throws Exception {
+        VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
+
+        testContext
+                .theme(THEME)
+                .get();
+
+        tmp.setTheme(null);
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
 
     }
 
@@ -103,6 +139,27 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void updateCandidateAfterVoteBegun() throws Exception {
+        VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now().minusDays(1));
+        theme.setFinishVote(LocalDateTime.now().plusDays(2));
+
+        VoteCandidate candidate = testContext
+                .candidate(VOTE_CANDIDATE, theme)
+                .get();
+
+        tmp.setName("New name");
+        tmp.setCandidateId(candidate.getId());
+        tmp.setTheme(candidate.getTheme().getId());
+
+        mvc.perform(put(URL_ITEM, candidate.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     public void deleteCandidate() throws Exception {
         VoteCandidate theme = testContext
                 .candidate(VOTE_CANDIDATE, THEME)
@@ -113,11 +170,29 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void deleteCandidateWithVotes() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        Vote vote = testContext
+                .vote(VOTE_CANDIDATE, theme, USER)
+                .get();
+
+        mvc.perform(delete(URL_ITEM, vote.getCandidate().getId()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     public void createVote() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
         VoteCandidate candidate = testContext
                 .currentUser(USER)
                 .and()
-                .candidate(VOTE_CANDIDATE, THEME)
+                .candidate(VOTE_CANDIDATE, theme)
                 .get();
 
         mvc.perform(post(URL_VOTE, candidate.getId()))
@@ -127,9 +202,34 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void createDoubleVote() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        VoteCandidate candidate = testContext
+                .currentUser(USER)
+                .and()
+                .candidate(VOTE_CANDIDATE, theme)
+                .get();
+
+        mvc.perform(post(URL_VOTE, candidate.getId()))
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.candidate").isNotEmpty())
+                .andExpect(status().isCreated());
+
+        mvc.perform(post(URL_VOTE, candidate.getId()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     public void getVotes() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
         Vote vote = testContext
-                .vote(VOTE_CANDIDATE, THEME, USER)
+                .vote(VOTE_CANDIDATE, theme, USER)
                 .get();
 
         mvc.perform(get(URL_VOTE, vote.getCandidate().getId()))

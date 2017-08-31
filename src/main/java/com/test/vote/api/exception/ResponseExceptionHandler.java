@@ -24,6 +24,11 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({IllegalTimeException.class, EntityExistsException.class})
     public ResponseEntity handleIllegalArgumentException(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity handleExceptions(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

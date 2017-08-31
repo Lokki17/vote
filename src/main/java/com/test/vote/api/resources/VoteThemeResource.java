@@ -2,9 +2,9 @@ package com.test.vote.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.test.vote.api.resources.validation.IsStartBeforeFinish;
+import com.test.vote.api.resources.validation.IsTimeAfterNow;
 import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.validation.constraints.NotNull;
@@ -34,9 +34,11 @@ public class VoteThemeResource extends ResourceSupport implements Serializable {
     private String name;
 
     @NotNull
+    @IsTimeAfterNow
     private LocalDateTime startVote;
 
     @NotNull
+    @IsTimeAfterNow
     private LocalDateTime finishVote;
 
     private Long[] voteCandidates;

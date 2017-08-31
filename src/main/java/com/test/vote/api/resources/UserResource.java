@@ -19,6 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @JsonInclude(value = NON_NULL)
+@EmailDoestExists
 public class UserResource implements Serializable {
 
     private Long id;
@@ -30,6 +31,5 @@ public class UserResource implements Serializable {
     private String password;
 
     @NotNull
-    @EmailDoestExists
     private String email;
 }

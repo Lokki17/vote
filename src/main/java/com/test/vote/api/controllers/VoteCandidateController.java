@@ -61,7 +61,7 @@ public class VoteCandidateController {
     }
 
     @PostMapping
-    public ResponseEntity<VoteCandidateResource> create(@RequestBody VoteCandidateResource resource) {
+    public ResponseEntity<VoteCandidateResource> create(@Valid @RequestBody VoteCandidateResource resource) {
         VoteCandidate entity = mapper.fromResource(resource, new VoteCandidate());
         VoteCandidateResource created = mapper.toResource(service.create(entity));
         created.add(linkTo(VoteThemeController.class).slash(created.getCandidateId()).withSelfRel());

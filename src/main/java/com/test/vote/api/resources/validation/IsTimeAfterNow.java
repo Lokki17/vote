@@ -1,7 +1,6 @@
 package com.test.vote.api.resources.validation;
 
-import com.test.vote.api.resources.UserResource;
-import com.test.vote.services.UserService;
+import com.test.vote.services.VoteThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.Constraint;
@@ -10,20 +9,20 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * @author Lokki
  * @since 26.01.2017
  */
-@Target({TYPE})
+@Target({FIELD})
 @Retention(RUNTIME)
-@Constraint(validatedBy = EmailDoestExists.Validator.class)
-public @interface EmailDoestExists {
+@Constraint(validatedBy = IsTimeAfterNow.Validator.class)
+public @interface IsTimeAfterNow {
 
     String message() default "{VoteTheme doesn't exists}";
 
@@ -31,22 +30,20 @@ public @interface EmailDoestExists {
 
     Class<? extends Payload>[] payload() default {};
 
-    class Validator implements ConstraintValidator<EmailDoestExists, UserResource> {
-
-        @Autowired
-        private UserService userService;
+    class Validator implements ConstraintValidator<IsTimeAfterNow, LocalDateTime> {
 
         @Override
-        public void initialize(EmailDoestExists constraintAnnotation) {
+        public void initialize(IsTimeAfterNow constraintAnnotation) {
 
         }
 
         @Override
-        public boolean isValid(UserResource userResource, ConstraintValidatorContext context) {
+        public boolean isValid(LocalDateTime time, ConstraintValidatorContext context) {
+            if (Objects.isNull(time)) {
+                return true;
+            }
 
-            return userService.getByEmail(userResource.getEmail())
-                    .filter(user -> !Objects.equals(user.getId(), userResource.getId()))
-                    .isEmpty();
+            return time.isAfter(LocalDateTime.now());
         }
     }
 }

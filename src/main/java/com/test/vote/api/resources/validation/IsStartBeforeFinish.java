@@ -36,6 +36,13 @@ public @interface IsStartBeforeFinish {
 
         @Override
         public boolean isValid(VoteThemeResource resource, ConstraintValidatorContext context) {
+            if (resource.getStartVote() == null) {
+                return true;
+            }
+
+            if (resource.getFinishVote() == null) {
+                return true;
+            }
 
             return resource.getStartVote().isBefore(resource.getFinishVote());
         }

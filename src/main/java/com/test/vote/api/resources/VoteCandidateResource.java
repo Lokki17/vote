@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.hateoas.ResourceSupport;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,5 +32,6 @@ public class VoteCandidateResource extends ResourceSupport implements Serializab
     private List<Long> votes;
 
     @VoteThemeExists
+    @NotNull
     private Long theme;
 }

@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+
 import static com.test.vote.TestData.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,7 +67,56 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
                 .andExpect(jsonPath("$.startVote").isNotEmpty())
                 .andExpect(jsonPath("$.finishVote").isNotEmpty())
                 .andExpect(jsonPath("$.voteCandidates").isArray())
+                .andExpect(jsonPath("$._links").isNotEmpty())
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void createWithIllegalDates() throws Exception {
+        VoteThemeResource tmp = SerializationUtils.clone(THEME_RESOURCE);
+        tmp.setStartVote(LocalDateTime.now().plusDays(1));
+        tmp.setFinishVote(LocalDateTime.now());
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createWithWrongStartDate() throws Exception {
+        VoteThemeResource tmp = SerializationUtils.clone(THEME_RESOURCE);
+        tmp.setStartVote(LocalDateTime.now().minusDays(1));
+        tmp.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createWithStartDateIsNull() throws Exception {
+        VoteThemeResource tmp = SerializationUtils.clone(THEME_RESOURCE);
+        tmp.setStartVote(null);
+        tmp.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createWithEndDateIsNull() throws Exception {
+        VoteThemeResource tmp = SerializationUtils.clone(THEME_RESOURCE);
+        tmp.setStartVote(LocalDateTime.now().plusDays(1));
+        tmp.setFinishVote(null);
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -98,5 +150,4 @@ public class VoteThemeControllerTest extends BaseControllerIntegrationTest{
         mvc.perform(delete(URL_ITEM, theme.getId()))
                 .andExpect(status().isNoContent());
     }
-
 }
