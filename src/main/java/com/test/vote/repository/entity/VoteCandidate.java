@@ -23,7 +23,8 @@ public class VoteCandidate extends AbstractEntity {
     @NotNull
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JoinColumn
     private List<Vote> votes = new ArrayList<>();
 
     @OneToOne

@@ -1,14 +1,21 @@
 package com.test.vote.services.impl;
 
 import com.test.vote.repository.VoteCandidateRepository;
+import com.test.vote.repository.VoteRepository;
+import com.test.vote.repository.VoteThemeRepository;
+import com.test.vote.repository.entity.Vote;
 import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteCandidateService;
+import com.test.vote.services.VoteThemeService;
+import com.test.vote.services.exception.EntityExistsException;
+import com.test.vote.services.exception.EntityNotFoundException;
 import com.test.vote.services.exception.IllegalTimeException;
 import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +31,12 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
 
     @NonNull
     private VoteCandidateRepository repository;
+
+    @NonNull
+    private VoteRepository voteRepository;
+
+    @NonNull
+    private VoteThemeService themeService;
 
     @Override
     public Option<VoteCandidate> get(Long id) {
@@ -51,11 +64,27 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
 
     @Override
     public VoteCandidate create(VoteCandidate entity) {
-        return repository.save(entity);
+        VoteCandidate created = repository.save(entity);
+        themeService.addCandidate(created);
+        return created;
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void delete(VoteCandidate entity) {
-        repository.delete(entity);
+        if (!voteRepository.existsByCandidate(entity)) {
+
+            repository.delete(entity);
+        } else throw new EntityExistsException("Candidate has some votes and cant be deleted");
+    }
+
+    @Override
+    public VoteCandidate addVote(Vote vote) {
+        return get(vote.getCandidate().getId())
+                .map(candidate -> {
+                    candidate.getVotes().add(vote);
+                    return repository.save(candidate);
+                })
+                .getOrElseThrow(() -> new EntityNotFoundException("Candidate with id" + vote.getCandidate().getId() + " not found"));
     }
 }

@@ -12,8 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * @author Lokki
- * @since 17.01.2017
+ * @author Lokki17
+ * @since 29.08.2017
  */
 @AllArgsConstructor
 @Builder

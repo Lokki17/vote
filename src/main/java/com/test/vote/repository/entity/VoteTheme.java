@@ -2,7 +2,9 @@ package com.test.vote.repository.entity;
 
 import lombok.*;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -24,7 +26,8 @@ public class VoteTheme extends AbstractEntity {
     @NotNull
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JoinColumn
     private Set<VoteCandidate> voteCandidates = new HashSet<>();
 
     private LocalDateTime startVote;

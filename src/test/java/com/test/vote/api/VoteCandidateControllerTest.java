@@ -29,11 +29,11 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
 
     @Test
     public void getCandidateById() throws Exception {
-        VoteCandidate theme = testContext
+        VoteCandidate candidate = testContext
                 .candidate(VOTE_CANDIDATE, THEME)
                 .get();
 
-        mvc.perform(get(URL_ITEM, theme.getId()))
+        mvc.perform(get(URL_ITEM, candidate.getId()))
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").isNotEmpty())
                 .andExpect(jsonPath("$.votes").isArray())
@@ -128,7 +128,6 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
 
     @Test
     public void getVotes() throws Exception {
-
         Vote vote = testContext
                 .vote(VOTE_CANDIDATE, THEME, USER)
                 .get();

@@ -48,7 +48,6 @@ public class VoteCandidateController {
     private final UserAgent userAgent;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public VoteCandidateResource getById(@PathVariable("id") VoteCandidate entity) {
         return mapper.toResource(entity);
     }
@@ -86,8 +85,7 @@ public class VoteCandidateController {
     }
 
     @PostMapping("/{id}/votes")
-//    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<VoteResource> create(@PathVariable("id") VoteCandidate entity, HttpServletRequest request) {
+    public ResponseEntity<VoteResource> create(@PathVariable("id") VoteCandidate entity) {
         return userAgent.currentUser()
                 .map(user -> voteService.create(new Vote(user, entity)))
                 .map(vote -> new ResponseEntity<>(voteMapper.toResource(vote), HttpStatus.CREATED))

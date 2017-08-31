@@ -7,8 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Lokki
- * @since 18.01.2017
+ * @author Lokki17
+ * @since 29.08.2017
  */
 @Component
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))

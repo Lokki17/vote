@@ -16,5 +16,5 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
 
     boolean existsByUserAndCandidate_Theme(User user, VoteTheme theme);
 
-    List<Vote> findByCandidate(VoteCandidate candidate);
+    boolean existsByCandidate(VoteCandidate candidate);
 }

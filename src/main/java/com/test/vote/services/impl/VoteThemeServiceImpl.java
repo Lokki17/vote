@@ -1,9 +1,11 @@
 package com.test.vote.services.impl;
 
 import com.test.vote.repository.VoteThemeRepository;
+import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import com.test.vote.services.VoteThemeService;
 import com.test.vote.services.exception.EntityExistsException;
+import com.test.vote.services.exception.EntityNotFoundException;
 import javaslang.control.Option;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,16 @@ public class VoteThemeServiceImpl implements VoteThemeService {
         }
 
         repository.delete(entity);
+    }
+
+    @Override
+    public VoteTheme addCandidate(VoteCandidate candidate) {
+        return get(candidate.getTheme().getId())
+                .map(theme -> {
+                    theme.getVoteCandidates().add(candidate);
+                    return repository.save(theme);
+                })
+                .getOrElseThrow(() -> new EntityNotFoundException("Theme with id " + candidate.getTheme().getId() + " not found"));
     }
 
     private boolean isVoteExists(VoteTheme entity) {

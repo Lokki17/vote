@@ -1,5 +1,6 @@
 package com.test.vote.services;
 
+import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
 import javaslang.control.Option;
 
@@ -20,5 +21,7 @@ public interface VoteThemeService {
     VoteTheme create(VoteTheme entity);
 
     void delete(VoteTheme user);
+
+    VoteTheme addCandidate(VoteCandidate candidate);
 
 }

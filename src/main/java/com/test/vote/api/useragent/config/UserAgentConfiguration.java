@@ -5,6 +5,10 @@ import com.test.vote.api.useragent.impl.UserAgentFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+/**
+ * @author Lokki17
+ * @since 29.08.2017
+ */
 @Configuration
 public class UserAgentConfiguration {
 

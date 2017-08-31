@@ -1,7 +1,9 @@
 package com.test.vote.api.exception;
 
 
+import com.test.vote.services.exception.EntityExistsException;
 import com.test.vote.services.exception.EntityNotFoundException;
+import com.test.vote.services.exception.IllegalTimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalTimeException.class, EntityExistsException.class})
     public ResponseEntity handleIllegalArgumentException(Exception exception, WebRequest request) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

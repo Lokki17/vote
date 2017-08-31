@@ -5,8 +5,8 @@ import javaslang.control.Option;
 import org.springframework.security.core.Authentication;
 
 /**
- * @author Lokki
- * @since 17.01.2017
+ * @author Lokki17
+ * @since 29.08.2017
  */
 public interface UserAgent {
 

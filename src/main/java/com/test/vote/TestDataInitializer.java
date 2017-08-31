@@ -11,6 +11,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public class TestDataInitializer {
                             .name("User 1")
                             .email("email@mail.ru")
                             .password("secret")
-                            .authority(Authority.ADMIN)
+                            .authority(Authority.ROLE_ADMIN)
                             .build()
             );
 
@@ -52,7 +54,7 @@ public class TestDataInitializer {
                             .name("User 2")
                             .email("email@gmail.com")
                             .password("secret")
-                            .authority(Authority.USER)
+                            .authority(Authority.ROLE_USER)
                             .build()
             );
 
@@ -61,7 +63,7 @@ public class TestDataInitializer {
                             .name("User 3")
                             .email("anyEmail@mail.com")
                             .password("secret")
-                            .authority(Authority.USER)
+                            .authority(Authority.ROLE_USER)
                             .build()
             );
 
@@ -113,23 +115,35 @@ public class TestDataInitializer {
                             .build()
             );
 
-            createVoteIfNotPresent(
+            theme1.setVoteCandidates(new HashSet<>(Arrays.asList(candidate11, candidate21)));
+            theme2.setVoteCandidates(new HashSet<>(Arrays.asList(candidate12, candidate22)));
+            voteThemeRepository.save(theme1);
+            voteThemeRepository.save(theme2);
+
+            Vote vote1 = createVoteIfNotPresent(
                     new Vote(user1, candidate11)
             );
 
-            createVoteIfNotPresent(
+            Vote vote2 = createVoteIfNotPresent(
                     new Vote(user2, candidate12)
             );
 
-            createVoteIfNotPresent(
+            Vote vote3 = createVoteIfNotPresent(
                     new Vote(user1, candidate21)
             );
 
-            createVoteIfNotPresent(
+            Vote vote4 = createVoteIfNotPresent(
                     new Vote(user3, candidate22)
             );
 
-
+            candidate11.getVotes().add(vote1);
+            voteCandidateRepository.save(candidate11);
+            candidate12.getVotes().add(vote2);
+            voteCandidateRepository.save(candidate12);
+            candidate21.getVotes().add(vote3);
+            voteCandidateRepository.save(candidate21);
+            candidate22.getVotes().add(vote4);
+            voteCandidateRepository.save(candidate22);
 
             return null;
         });

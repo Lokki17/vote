@@ -1,9 +1,11 @@
 package com.test.vote.services.impl;
 
+import com.test.vote.repository.VoteCandidateRepository;
 import com.test.vote.repository.VoteRepository;
 import com.test.vote.repository.entity.Vote;
 import com.test.vote.repository.entity.VoteCandidate;
 import com.test.vote.repository.entity.VoteTheme;
+import com.test.vote.services.VoteCandidateService;
 import com.test.vote.services.VoteService;
 import com.test.vote.services.exception.EntityExistsException;
 import com.test.vote.services.exception.IllegalTimeException;
@@ -27,6 +29,9 @@ public class VoteServiceImpl implements VoteService {
     @NonNull
     private VoteRepository repository;
 
+    @NonNull
+    private VoteCandidateService candidateService;
+
     @Override
     public Option<Vote> get(Long id) {
         return Option.of(repository.findOne(id));
@@ -45,7 +50,9 @@ public class VoteServiceImpl implements VoteService {
         }
         checkTime(entity);
 
-        return repository.save(entity);
+        Vote created = repository.save(entity);
+        candidateService.addVote(created);
+        return created;
     }
 
     private void checkTime(Vote entry) {
