@@ -25,7 +25,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = EmailDoestExists.Validator.class)
 public @interface EmailDoestExists {
 
-    String message() default "{VoteTheme doesn't exists}";
+    String message() default "{Email exists}";
 
     Class<?>[] groups() default {};
 

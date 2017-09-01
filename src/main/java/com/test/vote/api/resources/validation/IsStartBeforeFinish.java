@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = IsStartBeforeFinish.Validator.class)
 public @interface IsStartBeforeFinish {
 
-    String message() default "{VoteTheme doesn't exists}";
+    String message() default "{FinishVote time is before StartVote}";
 
     Class<?>[] groups() default {};
 

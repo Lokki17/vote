@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = VoteThemeExists.Validator.class)
 public @interface VoteThemeExists {
 
-    String message() default "{VoteTheme doesn't exists}";
+    String message() default "{VoteTheme does not exists}";
 
     Class<?>[] groups() default {};
 

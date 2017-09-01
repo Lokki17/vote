@@ -24,7 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = IsTimeAfterNow.Validator.class)
 public @interface IsTimeAfterNow {
 
-    String message() default "{VoteTheme doesn't exists}";
+    String message() default "{Time is before now}";
 
     Class<?>[] groups() default {};
 

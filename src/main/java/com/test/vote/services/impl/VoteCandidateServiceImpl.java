@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,6 +64,7 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
     }
 
     @Override
+    @Transactional
     public VoteCandidate create(VoteCandidate entity) {
         VoteCandidate created = repository.save(entity);
         themeService.addCandidate(created);
@@ -72,7 +74,6 @@ public class VoteCandidateServiceImpl implements VoteCandidateService {
     @Override
     public void delete(VoteCandidate entity) {
         if (!voteRepository.existsByCandidate(entity)) {
-
             repository.delete(entity);
         } else throw new EntityExistsException("Candidate has some votes and cant be deleted");
     }
