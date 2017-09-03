@@ -41,12 +41,19 @@ public class TestContext extends ExternalResource {
     private final UserRepository userRepository;
 
 
+    public TestVote vote(VoteCandidate data, VoteTheme theme) {
+
+        TestVoteCandidate tmp = candidate(data, theme);
+
+        return new TestVote(new Vote(null, tmp.get()));
+    }
+
     public TestVote vote(VoteCandidate data, VoteTheme theme, User user) {
 
         TestVoteCandidate tmp = candidate(data, theme);
-        TestUser temp = currentUser(user);
+        User tmpUser = new TestUser(user, this).get();
 
-        return new TestVote(new Vote(temp.get(), tmp.get()));
+        return new TestVote(new Vote(tmpUser, tmp.get()));
     }
 
     public TestVoteCandidate candidate(VoteCandidate data, VoteTheme theme) {
@@ -65,9 +72,9 @@ public class TestContext extends ExternalResource {
         return new TestVoteTheme(tmp);
     }
 
-    public TestUser currentUser(User user) {
+    public TestUser currentUser(User user, Authority... authorities) {
         TestUser currentUser = new TestUser(user, this);
-        SecurityContextHolder.getContext().setAuthentication(authOf(currentUser.get()));
+        SecurityContextHolder.getContext().setAuthentication(authOf(currentUser.get() ,authorities));
         return currentUser;
     }
 
@@ -148,7 +155,7 @@ public class TestContext extends ExternalResource {
 
     @Override
     protected void after() {
-        voteThemeRepository.deleteAll();
+        SecurityContextHolder.clearContext();
     }
 
     private static Authentication authOf(Object principal, Authority... authorities) {

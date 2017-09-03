@@ -1,9 +1,7 @@
 package com.test.vote.api;
 
 import com.test.vote.api.resources.VoteCandidateResource;
-import com.test.vote.repository.entity.Vote;
-import com.test.vote.repository.entity.VoteCandidate;
-import com.test.vote.repository.entity.VoteTheme;
+import com.test.vote.repository.entity.*;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -12,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 import static com.test.vote.TestData.*;
+import static com.test.vote.repository.entity.Authority.ROLE_ADMIN;
+import static com.test.vote.repository.entity.Authority.ROLE_USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +31,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     @Test
     public void getCandidateById() throws Exception {
         VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .candidate(VOTE_CANDIDATE, THEME)
                 .get();
 
@@ -40,12 +42,45 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
                 .andExpect(jsonPath("$.votes").isArray())
                 .andExpect(jsonPath("$.theme").isNotEmpty())
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    public void getCandidateByIdWithROLE_USER() throws Exception {
+        VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_USER)
+                .and()
+                .candidate(VOTE_CANDIDATE, THEME)
+                .get();
+
+        mvc.perform(get(URL_ITEM, candidate.getId()))
+                .andExpect(jsonPath("$.candidateId").isNotEmpty())
+                .andExpect(jsonPath("$.name").isNotEmpty())
+                .andExpect(jsonPath("$.votes").isArray())
+                .andExpect(jsonPath("$.theme").isNotEmpty())
+                .andExpect(status().isOk());
     }
 
     @Test
     public void getAllCandidates() throws Exception {
         testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
+                .candidate(VOTE_CANDIDATE, THEME)
+                .get();
+
+        mvc.perform(get(URL))
+                .andExpect(jsonPath("$[0].candidateId").isNotEmpty())
+                .andExpect(jsonPath("$[0].name").isNotEmpty())
+                .andExpect(jsonPath("$[0].votes").isArray())
+                .andExpect(jsonPath("$[0].theme").isNotEmpty())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getAllCandidatesWithROLE_USER() throws Exception {
+        testContext
+                .currentUser(USER, ROLE_USER)
+                .and()
                 .candidate(VOTE_CANDIDATE, THEME)
                 .get();
 
@@ -60,6 +95,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     @Test
     public void getAllCandidatesByTheme() throws Exception {
         VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .candidate(VOTE_CANDIDATE, THEME)
                 .get();
 
@@ -77,6 +114,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
 
         VoteTheme theme = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .theme(THEME)
                 .get();
 
@@ -95,10 +134,30 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void createCandidateWithROLE_USER() throws Exception {
+        VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
+
+        VoteTheme theme = testContext
+                .currentUser(USER, ROLE_USER)
+                .and()
+                .theme(THEME)
+                .get();
+
+        tmp.setTheme(theme.getId());
+
+        mvc.perform(post(URL)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     public void createWithWrongCandidate() throws Exception {
         VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
 
         testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .theme(THEME)
                 .get();
 
@@ -116,6 +175,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
 
         testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .theme(THEME)
                 .get();
 
@@ -136,6 +197,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setFinishVote(LocalDateTime.now().plusDays(2));
 
         VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .candidate(VOTE_CANDIDATE, theme)
                 .get();
 
@@ -154,6 +217,29 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     }
 
     @Test
+    public void updateCandidateWithROLE_USER() throws Exception {
+        VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now().plusDays(1));
+        theme.setFinishVote(LocalDateTime.now().plusDays(2));
+
+        VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_USER)
+                .and()
+                .candidate(VOTE_CANDIDATE, theme)
+                .get();
+
+        tmp.setName("New name");
+        tmp.setCandidateId(candidate.getId());
+        tmp.setTheme(candidate.getTheme().getId());
+
+        mvc.perform(put(URL_ITEM, candidate.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json(tmp)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     public void updateCandidateAfterVoteBegun() throws Exception {
         VoteCandidateResource tmp = SerializationUtils.clone(VOTE_CANDIDATE_RESOURCE);
         VoteTheme theme = SerializationUtils.clone(THEME);
@@ -161,6 +247,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setFinishVote(LocalDateTime.now().plusDays(2));
 
         VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .candidate(VOTE_CANDIDATE, theme)
                 .get();
 
@@ -177,6 +265,8 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
     @Test
     public void deleteCandidate() throws Exception {
         VoteCandidate theme = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
                 .candidate(VOTE_CANDIDATE, THEME)
                 .get();
 
@@ -190,12 +280,34 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setStartVote(LocalDateTime.now());
         theme.setFinishVote(LocalDateTime.now().plusDays(1));
 
+        User tmp = testContext
+                .currentUser(USER, ROLE_USER)
+                .get();
+
         Vote vote = testContext
-                .vote(VOTE_CANDIDATE, theme, USER)
+                .vote(VOTE_CANDIDATE, theme, tmp)
                 .get();
 
         mvc.perform(delete(URL_ITEM, vote.getCandidate().getId()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void deleteCandidateWithVotesWithROLE_USER() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        User tmp = testContext
+                .currentUser(USER, ROLE_USER)
+                .get();
+
+        Vote vote = testContext
+                .vote(VOTE_CANDIDATE, theme, tmp)
+                .get();
+
+        mvc.perform(delete(URL_ITEM, vote.getCandidate().getId()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -205,7 +317,25 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setFinishVote(LocalDateTime.now().plusDays(1));
 
         VoteCandidate candidate = testContext
-                .currentUser(USER)
+                .currentUser(USER, ROLE_ADMIN)
+                .and()
+                .candidate(VOTE_CANDIDATE, theme)
+                .get();
+
+        mvc.perform(post(URL_VOTE, candidate.getId()))
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.candidate").isNotEmpty())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void createVoteWithROLE_USER() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        VoteCandidate candidate = testContext
+                .currentUser(USER, ROLE_USER)
                 .and()
                 .candidate(VOTE_CANDIDATE, theme)
                 .get();
@@ -223,7 +353,7 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setFinishVote(LocalDateTime.now().plusDays(1));
 
         VoteCandidate candidate = testContext
-                .currentUser(USER)
+                .currentUser(USER, ROLE_ADMIN)
                 .and()
                 .candidate(VOTE_CANDIDATE, theme)
                 .get();
@@ -243,8 +373,33 @@ public class VoteCandidateControllerTest extends BaseControllerIntegrationTest {
         theme.setStartVote(LocalDateTime.now());
         theme.setFinishVote(LocalDateTime.now().plusDays(1));
 
+        User tmp = testContext
+                .currentUser(USER, ROLE_ADMIN)
+                .get();
+
         Vote vote = testContext
-                .vote(VOTE_CANDIDATE, theme, USER)
+                .vote(VOTE_CANDIDATE, theme, tmp)
+                .get();
+
+        mvc.perform(get(URL_VOTE, vote.getCandidate().getId()))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].id").isNotEmpty())
+                .andExpect(jsonPath("$[0].candidate").isNotEmpty())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getVotesWithROLE_USER() throws Exception {
+        VoteTheme theme = SerializationUtils.clone(THEME);
+        theme.setStartVote(LocalDateTime.now());
+        theme.setFinishVote(LocalDateTime.now().plusDays(1));
+
+        User tmp = testContext
+                .currentUser(USER, ROLE_USER)
+                .get();
+
+        Vote vote = testContext
+                .vote(VOTE_CANDIDATE, theme, tmp)
                 .get();
 
         mvc.perform(get(URL_VOTE, vote.getCandidate().getId()))

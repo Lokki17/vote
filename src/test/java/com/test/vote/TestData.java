@@ -4,15 +4,10 @@ import com.test.vote.api.resources.UserResource;
 import com.test.vote.api.resources.VoteResource;
 import com.test.vote.api.resources.VoteThemeResource;
 import com.test.vote.api.resources.VoteCandidateResource;
-import com.test.vote.repository.UserRepository;
-import com.test.vote.repository.entity.User;
-import com.test.vote.repository.entity.Vote;
-import com.test.vote.repository.entity.VoteCandidate;
-import com.test.vote.repository.entity.VoteTheme;
+import com.test.vote.repository.entity.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Lokki17
@@ -24,6 +19,7 @@ public class TestData {
             .name("User 1")
             .email("email@mail.ru")
             .password("secret")
+            .authority(Authority.ROLE_ADMIN)
             .build();
 
     public static VoteTheme THEME = VoteTheme.builder()
@@ -49,10 +45,11 @@ public class TestData {
             .finishVote(THEME.getFinishVote())
             .build();
 
-    public static UserResource USER_RESOURCE = UserResource.builder()
-            .email(USER.getEmail())
-            .name(USER.getName())
-            .password(USER.getPassword())
+    public static UserResource NEW_USER_RESOURCE = UserResource.builder()
+            .email("some@email.ru")
+            .name("New user")
+            .password("secret")
+            .authority(Authority.ROLE_USER)
             .build();
 
     public static VoteCandidateResource VOTE_CANDIDATE_RESOURCE = VoteCandidateResource.builder()

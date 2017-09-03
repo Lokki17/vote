@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,11 +49,13 @@ public class VoteCandidateController {
     private final UserAgent userAgent;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public VoteCandidateResource getById(@PathVariable("id") VoteCandidate entity) {
         return mapper.toResource(entity);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<VoteCandidateResource> getAll(@RequestParam(name = "theme", required = false) VoteTheme theme) {
 
         return mapper.toResource(
@@ -61,6 +64,7 @@ public class VoteCandidateController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<VoteCandidateResource> create(@Valid @RequestBody VoteCandidateResource resource) {
         VoteCandidate entity = mapper.fromResource(resource, new VoteCandidate());
         VoteCandidateResource created = mapper.toResource(service.create(entity));
@@ -73,6 +77,7 @@ public class VoteCandidateController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public VoteCandidateResource update(@Valid @RequestBody VoteCandidateResource resource, @PathVariable("id") VoteCandidate entity) {
         VoteCandidate updated = mapper.fromResource(resource, entity);
 
@@ -80,6 +85,7 @@ public class VoteCandidateController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity delete(@PathVariable("id") VoteCandidate entity) {
         service.delete(entity);
 
@@ -87,6 +93,7 @@ public class VoteCandidateController {
     }
 
     @PostMapping("/{id}/votes")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<VoteResource> create(@PathVariable("id") VoteCandidate entity) {
         return userAgent.currentUser()
                 .map(user -> voteService.create(new Vote(user, entity)))
@@ -95,6 +102,7 @@ public class VoteCandidateController {
     }
 
     @GetMapping("/{id}/votes")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<VoteResource> getAll(@PathVariable("id") VoteCandidate entity) {
 
         return voteMapper.toResource(voteService.findAll(entity));

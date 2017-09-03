@@ -2,6 +2,7 @@ package com.test.vote.api.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.test.vote.api.resources.validation.EmailDoestExists;
+import com.test.vote.repository.entity.Authority;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -32,4 +33,7 @@ public class UserResource implements Serializable {
 
     @NotNull
     private String email;
+
+    @NotNull
+    private Authority authority;
 }

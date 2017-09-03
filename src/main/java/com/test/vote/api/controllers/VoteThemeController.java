@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,11 +37,13 @@ public class VoteThemeController {
     private final VoteThemeMapper mapper;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public VoteThemeResource getById(@PathVariable("id") VoteTheme entity) {
         return mapper.toResource(entity);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<VoteThemeResource> getAll() {
         return service.findAll().stream()
                 .map(mapper::toResource)
@@ -47,6 +51,7 @@ public class VoteThemeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<VoteThemeResource> create(@Valid @RequestBody VoteThemeResource resource) {
         VoteTheme entity = mapper.fromResource(resource, new VoteTheme());
         VoteThemeResource created = mapper.toResource(service.create(entity));
@@ -59,6 +64,7 @@ public class VoteThemeController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public VoteThemeResource update(@Valid @RequestBody VoteThemeResource resource, @PathVariable("id") VoteTheme entity) {
         VoteTheme updated = mapper.fromResource(resource, entity);
 
@@ -66,6 +72,7 @@ public class VoteThemeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity delete(@PathVariable("id") VoteTheme entity) {
         service.delete(entity);
 

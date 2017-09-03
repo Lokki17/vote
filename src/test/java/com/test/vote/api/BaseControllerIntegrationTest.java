@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.test.vote.VoteApplication;
-import com.test.vote.api.config.Config;
 import com.test.vote.repository.UserRepository;
 import com.test.vote.repository.VoteCandidateRepository;
 import com.test.vote.repository.VoteRepository;
@@ -18,7 +17,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +24,7 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.Charset;
+import static com.test.vote.TestData.USER;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -35,9 +33,6 @@ import java.nio.charset.Charset;
 )
 @ActiveProfiles("test")
 public abstract class BaseControllerIntegrationTest {
-
-    public static final MediaType APP_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     @Autowired
     private VoteRepository voteRepository;

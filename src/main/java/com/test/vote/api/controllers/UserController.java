@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,11 +32,13 @@ public class UserController {
     private final UserMapper mapper;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public UserResource getById(@PathVariable("id") User entity) {
         return mapper.toResource(entity);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<UserResource> getAll() {
         return service.findAll().stream()
                 .map(mapper::toResource)
@@ -43,6 +46,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserResource> create(@Valid @RequestBody UserResource resource) {
         User entity = mapper.fromResource(resource, new User());
 
@@ -53,6 +57,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public UserResource update(@Valid @RequestBody UserResource resource, @PathVariable("id") User entity) {
         User updated = mapper.fromResource(resource, entity);
 
@@ -60,6 +65,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable("id") User entity) {
         service.delete(entity);
 

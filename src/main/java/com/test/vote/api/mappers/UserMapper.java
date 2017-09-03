@@ -18,6 +18,7 @@ public class UserMapper {
         destination.setName(source.getName());
         destination.setEmail(source.getEmail());
         destination.setPassword(source.getPassword());
+        destination.setAuthority(source.getAuthority());
         return destination;
     }
 
